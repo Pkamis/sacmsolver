@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, SACMSolverActivity!</string>
+    <string name="hello">SACM Solver</string>
     <string name="app_name">SACM Solver</string>
 
 </resources>
