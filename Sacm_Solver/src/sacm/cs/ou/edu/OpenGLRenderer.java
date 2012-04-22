@@ -18,9 +18,9 @@ class OpenGLRenderer implements Renderer {
 	public OpenGLRenderer(){
 		//
 		mCubes.rotate(true, 0, 0);
-        mCubes.rotate(true, 1, 0);
-        mCubes.rotate(true, 1, 0);
-        Log.e("", "fghjk");
+       // mCubes.rotate(true, 1, 0);
+        //mCubes.rotate(true, 1, 0);
+       // Log.e("", "fghjk");
 	}
 
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
