@@ -1,8 +1,6 @@
 package sacm.cs.ou.edu;
 
-
 import android.app.Activity;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,8 +18,8 @@ public class GameActivity extends Activity
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                         WindowManager.LayoutParams.FLAG_FULLSCREEN);
         
-        GLSurfaceView view = new GLSurfaceView(this);
-        view.setRenderer(new OpenGLRenderer());
+        GameView view = new GameView(getApplicationContext());
+        view.setFocusable(true);
         setContentView(view);
     }
 }
