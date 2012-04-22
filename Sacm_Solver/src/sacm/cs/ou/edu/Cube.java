@@ -3,21 +3,17 @@ package sacm.cs.ou.edu;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-
 import javax.microedition.khronos.opengles.GL10;
 
-import android.util.Log;
-
-public class Cube {
+public class Cube 
+{
 	float [] translate = {0f,0f,0f};
 
-	private float CubeRotation;
-
-	public float[] current_Rotation = {0f, 0f, 0f};
+	private Quaternion mRotation = Quaternion.fromAxis(new Vector3D(1f,1f,1f), 0);
 
 
 	private FloatBuffer vertexBuffer;
-	public FloatBuffer colorBuffer;
+	private FloatBuffer colorBuffer;
 	private ByteBuffer indexBuffer;
 
 	protected static float verticies[]= {
@@ -71,7 +67,6 @@ public class Cube {
 	};
 
 	public Cube(Colors[] color){
-		CubeRotation = 0f;
 		colours = setColor(color);
 
 		ByteBuffer byteBuf =  ByteBuffer.allocateDirect(verticies.length*4);
@@ -92,6 +87,7 @@ public class Cube {
 
 
 	}
+	
 	private float[] setColor(Colors[] color) {
 		float[] returnColors = new float[96];
 		int i = 0;
@@ -190,25 +186,17 @@ public class Cube {
 		//        gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 		//        gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 
-		gl.glTranslatef(x,y,z);
-		//Log.e("",""+CubeRotation);
-		//CubeRotation += 9;
-		float temporary = new Float(CubeRotation);
-		gl.glRotatef(temporary, current_Rotation[0], current_Rotation[1], current_Rotation[2]);
-		//.e("",""+CubeRotation);
-		gl.glFrontFace(GL10.GL_CW);
 
+
+
+		gl.glTranslatef(x,y,z);
+		gl.glRotatef(mRotation.getAngle()*180f/(float)Math.PI, mRotation.getX(),mRotation.getY(),mRotation.getZ());
+//		gl.glRotatef(270,0,0,1);
+		
+		gl.glFrontFace(GL10.GL_CW);
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
 		gl.glColorPointer(4, GL10.GL_FLOAT, 0, colorBuffer);
 
-
-		//TODO find a way to handle the translate
-		//gl.glTranslatef(0f, 0f, -10f);
-		//mCubeRotation -= .5f;
-
-
-
-		//gl.glRotatef(mCubeRotation, 1f, 1f, 1f);
 
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 		gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
@@ -219,37 +207,14 @@ public class Cube {
 		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 		gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 
-		gl.glRotatef(-temporary, current_Rotation[0], current_Rotation[1], current_Rotation[2]);
+		gl.glRotatef(-mRotation.getAngle()*180f/(float)Math.PI, mRotation.getX(),mRotation.getY(),mRotation.getZ());
 		gl.glTranslatef(-x,-y,-z);
 	}
 
-	
-	boolean rotx = false;
-	boolean roty = false;
-	boolean rotz = false;
 
-	public void setRotation(float rotDeg, boolean[] dirs){
-		Log.w("",""+CubeRotation);
-
-		//TODO matrix multiplication for rotation
-		CubeRotation = (CubeRotation+rotDeg)%360;
-		
-		if (dirs[0]){
-			if(rotx) rotx = false;
-			else rotx = true;
-		}
-		if (dirs[1]){
-			if(roty) roty = false;
-			else roty = true;
-		}
-		if (dirs[2]){
-			if(rotz) rotz = false;
-			else rotz = true;
-		}
-		
-		current_Rotation[0] = (rotx? 1:0);
-		current_Rotation[1] = (roty? 1:0);
-		current_Rotation[2] = (rotz? 1:0);
+	public void setRotation(Quaternion rotate)
+	{
+		mRotation = mRotation.multiplyQuaternion(rotate,mRotation);
 	}
 
 
