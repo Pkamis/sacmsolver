@@ -8,8 +8,8 @@ import android.util.Log;
 
 class RubiksCube implements Renderer 
 {
-	 Quaternion mCubeRotation = Quaternion.fromAxis(new Vector3D(1f,1f,0f), (float)Math.PI/4);
-	float rotateIncrement = 0;
+	Quaternion mCubeRotation = Quaternion.fromAxis(new Vector3D(1f,1f,0f), (float)Math.PI/4);
+	float rotateIncrement = 45;
 
 	Cube[][][] chickens = new Cube[3][3][3];
 
@@ -22,33 +22,56 @@ class RubiksCube implements Renderer
 	private Colors k = Colors.BLACK;
 
 
+	private boolean rotating = false;
+	private final int maxSpeed = 80;
+	private int speed;
+	private boolean turnLR;
+	private int turnType;
+	private int turnDist;
 
 	public RubiksCube()
 	{
 		initializeColors();
 	}
-	
-	public void rotateView (Quaternion rotate)
-	{
-		mCubeRotation = mCubeRotation.multiplyQuaternion(rotate);
-	}
+
+//	public void rotateView (Quaternion rotate)
+//	{
+////		mCubeRotation = mCubeRotation.multiplyQuaternion(rotate);
+//	}
 
 
 	public void onDrawFrame(GL10 gl) 
 	{
+		if(rotating)
+		{
+			if (speed > 0)
+			{
+				speed--;
+				rotateCube(turnLR,turnType,turnDist,(float)((-Math.PI/2)/maxSpeed));
+				
+				if(speed == maxSpeed/2)
+					rotateArray(turnLR,turnType,turnDist,(float)-Math.PI/2);
+			}
+			else
+			{
+				rotating = false;
+			}
+		}
+
+
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);        
 		gl.glLoadIdentity();
 
-		gl.glTranslatef(0f, 0f, -20f);
-		rotateIncrement += 1;
-//		rotateView(Quaternion.fromAxis(new Vector3D(1f,1f,0f), (float)Math.PI/4+rotateIncrement));
-//		gl.glRotatef(mCubeRotation.getAngle()*180f/(float)Math.PI, mCubeRotation.getX(),mCubeRotation.getY(),mCubeRotation.getZ());
+		gl.glTranslatef(0f, 0f, -18f);
+		rotateIncrement += .5;
+		//		rotateView(Quaternion.fromAxis(new Vector3D(1f,1f,0f), (float)Math.PI/4+rotateIncrement));
+		//		gl.glRotatef(mCubeRotation.getAngle()*180f/(float)Math.PI, mCubeRotation.getX(),mCubeRotation.getY(),mCubeRotation.getZ());
 		gl.glRotatef(rotateIncrement, 1f, 1f, 0f);
 		gl.glTranslatef(-2.0f, 2.0f, 0f);
 
-		for(int x = 0; x < 3f; x++)
-			for(int y = 0; y < 3f; y++)
-				for(int z = 0; z < 3f; z++)
+		for(int x = 0; x < chickens.length; x++)
+			for(int y = 0; y < chickens.length; y++)
+				for(int z = 0; z < chickens.length; z++)
 				{
 					chickens[x][y][z].draw(gl,2.1f*z,-2.1f*y,-2.1f*x);
 				}
@@ -107,14 +130,56 @@ class RubiksCube implements Renderer
 
 	public void rotate(boolean left_right,int type, int dist)
 	{
+		if (!rotating)
+		{
+			turnLR = left_right;
+			turnType = type;
+			turnDist = dist;
+
+			rotating = true;
+			speed = maxSpeed;
+		}
+//		rotate(left_right,type,dist, (float)-Math.PI/2f);
+	}
+
+	private void rotateCube (boolean left_right,int type, int dist, float angle)
+	{
+		switch(type)
+		{
+		case 0:
+//			for(int i = 0; i < (left_right? 1:3); i++)
+			{
+				for(int x = 0; x<3;x++)
+					for(int y = 0; y<3; y++)
+						chickens[dist][x][y].setRotation(Quaternion.fromAxis(new Vector3D(0,0,1f), left_right? angle:-angle));
+			}
+			break;
+		case 1:
+//			for(int i = 0; i < (left_right? 1:4); i++)
+			{
+				for(int x = 0; x<3;x++)
+					for(int y = 0; y<3; y++)
+						chickens[x][dist][y].setRotation(Quaternion.fromAxis(new Vector3D(0,1f,0), left_right? angle:-angle));
+			}
+			break;
+		case 2:
+//			for(int i = 0; i < (left_right? 1:4); i++)
+			{
+				for(int x = 0; x<3;x++)
+					for(int y = 0; y<3; y++)
+						chickens[x][y][dist].setRotation(Quaternion.fromAxis(new Vector3D(1f,0,0), left_right? angle:-angle));	
+			}
+			break;
+		}
+	}
+
+	private void rotateArray (boolean left_right,int type, int dist, float angle)
+	{
 		switch(type)
 		{
 		case 0:
 			for(int i = 0; i < (left_right? 1:3); i++)
 			{
-				for(int x = 0; x<3;x++)
-					for(int y = 0; y<3; y++)
-						chickens[dist][x][y].setRotation(Quaternion.fromAxis(new Vector3D(0,0,1f), (float) -Math.PI/2f));
 				for(int x = 0; x<3;x++)
 					for(int y = 0; y<3; y++)
 					{
@@ -133,9 +198,6 @@ class RubiksCube implements Renderer
 			{
 				for(int x = 0; x<3;x++)
 					for(int y = 0; y<3; y++)
-						chickens[x][dist][y].setRotation(Quaternion.fromAxis(new Vector3D(0,1f,0), (float) -Math.PI/2f));
-				for(int x = 0; x<3;x++)
-					for(int y = 0; y<3; y++)
 					{
 						swapper(0, dist,0,2, dist, 0);
 						swapper(0, dist,0, 2, dist, 2);
@@ -149,10 +211,7 @@ class RubiksCube implements Renderer
 			break;
 		case 2:
 			for(int i = 0; i < (left_right? 1:4); i++)
-			{
-				for(int x = 0; x<3;x++)
-					for(int y = 0; y<3; y++)
-						chickens[x][y][dist].setRotation(Quaternion.fromAxis(new Vector3D(1f,0,0), (float) -Math.PI/2f));		
+			{	
 				for(int x = 0; x<3;x++)
 					for(int y = 0; y<3; y++)
 					{

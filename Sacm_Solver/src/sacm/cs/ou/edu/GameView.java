@@ -41,7 +41,7 @@ public class GameView extends GLSurfaceView
 			queueEvent(new Runnable() 
 			{
 				public void run() {
-					cube.rotate(((int)(Math.random()*2) == 0)? true:false, (int)(Math.random()*3), (int)(Math.random()*3));
+					cube.rotate(((int)(Math.random()*2) == 0)? true:true, (int)(Math.random()*3), (int)(Math.random()*3));
 				}
 			});
 		}
