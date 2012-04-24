@@ -1,11 +1,9 @@
 package sacm.cs.ou.edu;
 
-import android.util.Log;
-
 public class Quaternion 
 {
-	float x,y,z,w;
-	final float TOLERANCE = .00001f;
+	float x,y,z; //unit direction vector components
+	float w; //magnitude of the rotation vector
 	
 	public Quaternion (float x, float y, float z, float w)
 	{
@@ -21,6 +19,8 @@ public class Quaternion
 	{
 		// Don't normalize if we don't have to
 		double mag2 = w * w + x * x + y * y + z * z;
+		
+		final float TOLERANCE = .00001f;
 		
 		if (Math.abs(mag2) > TOLERANCE && Math.abs(mag2 - 1.0f) > TOLERANCE) 
 		{
@@ -87,35 +87,35 @@ public class Quaternion
 	}
 	
 	// Convert to Axis/Angles	
+	/*
+	 * Returns the angle of rotation
+	 */
 	public float getAngle ()
-	{
-		if(w > 1)
-			w = 1;
-		if(w<-1)
-			w = 1;
+	{	
 		return (float)Math.acos(w) * 2.0f;
 	}
 	
-	public Vector3D getAxis ()
-	{
-		float scale = (float)Math.sqrt(x * x + y * y + z * z);
-		float axisx = (float) x / scale;
-		float axisy = (float) y / scale;
-		float axisz = (float) z / scale;
-		
-		return (new Vector3D(axisx,axisy,axisz));
-	}
-
+	/*
+	 * returns the x component of the rotation vector.
+	 */
 	public float getX ()
 	{
 		float scale = (float) Math.sqrt(x * x + y * y + z * z);
 		return (scale == 0)? 0 : x / scale;
 	}
+	
+	/*
+	 * returns the y component of the rotation vector.
+	 */
 	public float getY ()
 	{
 		float scale = (float) Math.sqrt(x * x + y * y + z * z);
 		return (scale == 0)? 0 : y / scale;
 	}
+	
+	/*
+	 * returns the z component of the rotation vector.
+	 */
 	public float getZ ()
 	{
 		float scale = (float) Math.sqrt(x * x + y * y + z * z);

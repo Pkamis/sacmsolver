@@ -21,22 +21,22 @@ public class GameView extends GLSurfaceView
 	}
 	public boolean onTouchEvent (MotionEvent e)
 	{
-//		if (e.getPointerCount() == 1)
-//		{
-//			switch (e.getAction())
-//			{
-//			case MotionEvent.ACTION_DOWN: 	down = new Point((int)e.getX(),(int)e.getY()); move = new Point((int)e.getX(),(int)e.getY()); break;
-//			case MotionEvent.ACTION_MOVE: 	down = move; move = new Point((int)e.getX(e.getPointerId(e.getPointerCount()-1)),(int)e.getY()); break;
-//			}
-//
-//			queueEvent(new Runnable() 
-//			{
-//				public void run() {
-//					cube.rotateView(Quaternion.fromAxis(new Vector3D(down.x-move.x,down.y-move.y,0), .01f));
-//				}
-//			});
-//		}
-//		else if (e.getPointerCount() == 2)
+		if (e.getPointerCount() == 1)
+		{
+			switch (e.getAction())
+			{
+			case MotionEvent.ACTION_DOWN: 	down = new Point((int)e.getX(),(int)e.getY()); move = new Point((int)e.getX(),(int)e.getY()); break;
+			case MotionEvent.ACTION_MOVE: 	down = move; move = new Point((int)e.getX(e.getPointerId(e.getPointerCount()-1)),(int)e.getY()); break;
+			}
+
+			queueEvent(new Runnable() 
+			{
+				public void run() {
+					cube.rotateView(Quaternion.fromAxis(new Vector3D(down.x-move.x,down.y-move.y,0), .01f));
+				}
+			});
+		}
+		else if (e.getPointerCount() == 2)
 		{
 			queueEvent(new Runnable() 
 			{
