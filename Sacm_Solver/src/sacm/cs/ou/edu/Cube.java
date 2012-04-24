@@ -11,6 +11,9 @@ public class Cube
 
 	private Quaternion mRotation = Quaternion.fromAxis(new Vector3D(1f,1f,1f), 0);
 
+	public Quaternion currLoc = new Quaternion(Float.MAX_VALUE, 0f, 0f, 0f);
+	public Quaternion rotLoc = new Quaternion(0f, 0f, 0f, 0f);
+	public boolean rotating = false;
 
 	private FloatBuffer vertexBuffer;
 	private FloatBuffer colorBuffer;
@@ -157,9 +160,9 @@ public class Cube
 
 			case BLACK:
 				for (int j=0; j<4;j++){
-					returnColors[i] = .1f;					i++;
-					returnColors[i]= .1f;					i++;
-					returnColors[i] = .1f;					i++;
+					returnColors[i] = 1f;					i++;
+					returnColors[i]= 0f;					i++;
+					returnColors[i] = 1f;					i++;
 					returnColors[i] = 1f;					i++;
 
 				}
@@ -170,26 +173,43 @@ public class Cube
 		return returnColors;
 	}
 	public void draw(GL10 gl, float x, float y, float z) {
-		//TODO params for different base vertex position
-
-		//        gl.glFrontFace(GL10.GL_CW);
-				//        
-				//        gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
-		//        gl.glColorPointer(4, GL10.GL_FLOAT, 0, colorBuffer);
-		//        
-		//        gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-		//        gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
-		//         
-		//        gl.glDrawElements(GL10.GL_TRIANGLES, indicies.length, GL10.GL_UNSIGNED_BYTE, 
-		//                        indexBuffer);
-		//            
-		//        gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-		//        gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
+		if(rotating){
+			rotLoc.multiplyQuaternion(new Quaternion(.5f,.5f,.5f,0f));
+			gl.glTranslatef(rotLoc.x,rotLoc.y,rotLoc.z);
+			gl.glRotatef(mRotation.getAngle()*180f/(float)Math.PI, mRotation.getX(),mRotation.getY(),mRotation.getZ());
+//			gl.glRotatef(270,0,0,1);
+			
+			gl.glFrontFace(GL10.GL_CW);
+			gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
+			gl.glColorPointer(4, GL10.GL_FLOAT, 0, colorBuffer);
 
 
+			gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+			gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
 
+			gl.glDrawElements(GL10.GL_TRIANGLES, indicies.length, GL10.GL_UNSIGNED_BYTE, 
+					indexBuffer);
 
-		gl.glTranslatef(x,y,z);
+			gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+			gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
+
+			gl.glRotatef(-mRotation.getAngle()*180f/(float)Math.PI, mRotation.getX(),mRotation.getY(),mRotation.getZ());
+			gl.glTranslatef(-rotLoc.x,-rotLoc.y,-rotLoc.z);
+			
+			
+			
+			rotating = false;
+			return;
+			
+		}
+		
+		if(currLoc.x==Float.MAX_VALUE)
+		{
+			currLoc = new Quaternion(x,y,z, 0f);
+			rotLoc = new Quaternion(x,y,z, 0f);
+		}
+
+		gl.glTranslatef(currLoc.x,currLoc.y,currLoc.z);
 		gl.glRotatef(mRotation.getAngle()*180f/(float)Math.PI, mRotation.getX(),mRotation.getY(),mRotation.getZ());
 //		gl.glRotatef(270,0,0,1);
 		
@@ -208,7 +228,7 @@ public class Cube
 		gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 
 		gl.glRotatef(-mRotation.getAngle()*180f/(float)Math.PI, mRotation.getX(),mRotation.getY(),mRotation.getZ());
-		gl.glTranslatef(-x,-y,-z);
+		gl.glTranslatef(-currLoc.x,-currLoc.y,-currLoc.z);
 	}
 
 

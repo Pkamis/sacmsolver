@@ -1,3 +1,10 @@
+/*
+ * This class initializes n^3 individual cubes and puts them together to form one big rubiks cube.
+ * It also initializes the colors and updates the frame.
+ * 
+ */
+
+
 package sacm.cs.ou.edu;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -34,12 +41,12 @@ class RubiksCube implements Renderer
 		initializeColors();
 	}
 
-//	public void rotateView (Quaternion rotate)
-//	{
-////		mCubeRotation = mCubeRotation.multiplyQuaternion(rotate);
-//	}
-
-
+	public void rotateView (Quaternion rotate)
+	{
+		mCubeRotation = mCubeRotation.multiplyQuaternion(rotate);
+	}
+	
+	
 	public void onDrawFrame(GL10 gl) 
 	{
 		if(rotating)
@@ -63,10 +70,10 @@ class RubiksCube implements Renderer
 		gl.glLoadIdentity();
 
 		gl.glTranslatef(0f, 0f, -18f);
-		rotateIncrement += .5;
-		//		rotateView(Quaternion.fromAxis(new Vector3D(1f,1f,0f), (float)Math.PI/4+rotateIncrement));
-		//		gl.glRotatef(mCubeRotation.getAngle()*180f/(float)Math.PI, mCubeRotation.getX(),mCubeRotation.getY(),mCubeRotation.getZ());
-		gl.glRotatef(rotateIncrement, 1f, 1f, 0f);
+//		rotateIncrement += .05;
+//				rotateView(Quaternion.fromAxis(new Vector3D(1f,1f,0f), (float)Math.PI/4+rotateIncrement));
+				gl.glRotatef(mCubeRotation.getAngle()*180f/(float)Math.PI, mCubeRotation.getX(),mCubeRotation.getY(),mCubeRotation.getZ());
+//		gl.glRotatef(rotateIncrement, 1f, 1f, 0f);
 		gl.glTranslatef(-2.0f, 2.0f, 0f);
 
 		for(int x = 0; x < chickens.length; x++)
@@ -126,6 +133,10 @@ class RubiksCube implements Renderer
 		Cube temp = chickens[x1][y1][z1];
 		chickens[x1][y1][z1] = chickens[x2][y2][z2];
 		chickens[x2][y2][z2] = temp;
+		
+		Quaternion temp1 = chickens[x1][y1][z1].currLoc;
+		chickens[x1][y1][z1].currLoc = chickens[x2][y2][z2].currLoc;
+		chickens[x2][y2][z2].currLoc = temp1;
 	}
 
 	public void rotate(boolean left_right,int type, int dist)
@@ -150,24 +161,32 @@ class RubiksCube implements Renderer
 //			for(int i = 0; i < (left_right? 1:3); i++)
 			{
 				for(int x = 0; x<3;x++)
-					for(int y = 0; y<3; y++)
+					for(int y = 0; y<3; y++){
 						chickens[dist][x][y].setRotation(Quaternion.fromAxis(new Vector3D(0,0,1f), left_right? angle:-angle));
+						//chickens[dist][x][y].rotating = true;
+					}
+						
 			}
 			break;
 		case 1:
 //			for(int i = 0; i < (left_right? 1:4); i++)
 			{
 				for(int x = 0; x<3;x++)
-					for(int y = 0; y<3; y++)
+					for(int y = 0; y<3; y++){
 						chickens[x][dist][y].setRotation(Quaternion.fromAxis(new Vector3D(0,1f,0), left_right? angle:-angle));
+						//chickens[x][dist][y].rotating = true;
+					}
+				
 			}
 			break;
 		case 2:
 //			for(int i = 0; i < (left_right? 1:4); i++)
 			{
 				for(int x = 0; x<3;x++)
-					for(int y = 0; y<3; y++)
+					for(int y = 0; y<3; y++){
 						chickens[x][y][dist].setRotation(Quaternion.fromAxis(new Vector3D(1f,0,0), left_right? angle:-angle));	
+						//chickens[x][y][dist].rotating = true;
+					}
 			}
 			break;
 		}
